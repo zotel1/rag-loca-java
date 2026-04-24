@@ -1,12 +1,11 @@
 package com.rag.local;
 
-import com.rag.local.service.ChunkService;
-import com.rag.local.service.HashService;
+import com.rag.local.client.QdrantClient;
+import com.rag.local.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.rag.local.service.PdfService;
 
 import java.util.List;
 
@@ -22,6 +21,15 @@ public class ChatApplication implements CommandLineRunner {
 	@Autowired
 	private HashService hashService;
 
+	@Autowired
+	private EmbeddingService embeddingService;
+
+	@Autowired
+	private VectorStoreService vectorStoreService;
+
+	@Autowired
+	private QdrantClient qdrantClient;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
 
@@ -31,6 +39,11 @@ public class ChatApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
+
+
+		List<Double> embedding = embeddingService.generateEmbedding("Hola mundo");
+		System.out.println("Embedding size: " + embedding.size());
+
 		String text = pdfService.extractText("C:\\Users\\zottt\\Desktop\\Instituto-Superior-de-Formacion-docente-Ituzaingo\\primer_anio\\arquitectura_de_computadoras\\Conceptos Basicos de electricidad.pdf");
 		List<String> chunks = chunkService.splitText(text, 500);
 
@@ -38,5 +51,10 @@ public class ChatApplication implements CommandLineRunner {
 			String hash = hashService.generateHash(chunk);
 			System.out.println(hash);
 		}
+
+		qdrantClient.createCollectionIfNotExists();
+
+		vectorStoreService.storeChunks(chunks);
+		System.out.println("Chunks guardados en Qdrant");
 	}
 }
