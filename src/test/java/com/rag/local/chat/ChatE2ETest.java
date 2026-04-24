@@ -1,5 +1,6 @@
 package com.rag.local.chat;
 
+import com.rag.local.client.OllamaClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -15,8 +16,27 @@ public class ChatE2ETest {
     @LocalServerPort
     private int port;
 
+    private final OllamaClient ollamaClient = new OllamaClient();
+
     private final org.springframework.web.client.RestTemplate restTemplate =
             new org.springframework.web.client.RestTemplate();
+
+    @Test
+    void shouldRespondQuicklyWithLightModel() {
+
+        long start = System.currentTimeMillis();
+
+        String response = ollamaClient.chat("Decime hola en una frase corta");
+
+        long duration = System.currentTimeMillis() - start;
+
+        System.out.println("Tiempo de respuesta: " + duration + "ms");
+
+        assertThat(response).isNotBlank();
+
+        // opcional: validar tiempo (ej: menos de 10 segundos)
+        assertThat(duration).isLessThan(10000);
+    }
     @Test
     void shouldUploadAndAnswerQuestion() {
 
