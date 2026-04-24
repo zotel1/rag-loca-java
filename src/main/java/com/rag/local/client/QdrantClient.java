@@ -85,4 +85,17 @@ public class QdrantClient {
 
         System.out.println("✅ Collection created successfully");
     }
+
+    public List<Map<String, Object>> search(List<Double> vector, int limit) {
+        String url = baseUrl + "/collections/" + collection + "/points/search";
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("vector", vector);
+        request.put("limit", limit);
+        request.put("with_payload", true);
+
+        Map response = restTemplate.postForObject(url, request, Map.class);
+
+        return (List<Map<String, Object>>) response.get("result");
+    }
 }

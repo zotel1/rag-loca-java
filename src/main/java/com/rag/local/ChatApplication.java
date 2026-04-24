@@ -10,6 +10,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.List;
 
 @SpringBootApplication
+public class ChatApplication {
+	public static void main(String[] args) {
+        SpringApplication.run(ChatApplication.class, args);
+	}
+}
+
+/*
+@SpringBootApplication
 public class ChatApplication implements CommandLineRunner {
 
 	@Autowired
@@ -30,6 +38,9 @@ public class ChatApplication implements CommandLineRunner {
 	@Autowired
 	private QdrantClient qdrantClient;
 
+	@Autowired
+	private SearchService searchService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
 
@@ -37,7 +48,7 @@ public class ChatApplication implements CommandLineRunner {
 	}
 
 	@Override
-	public void run(String... args) {
+	public void run(String... args) throws InterruptedException {
 
 
 
@@ -49,12 +60,18 @@ public class ChatApplication implements CommandLineRunner {
 
 		for (String chunk : chunks) {
 			String hash = hashService.generateHash(chunk);
-			System.out.println(hash);
+
 		}
 
 		qdrantClient.createCollectionIfNotExists();
 
 		vectorStoreService.storeChunks(chunks);
+		Thread.sleep(2000);
 		System.out.println("Chunks guardados en Qdrant");
+
+		List<String> results = searchService.search("¿Qué es la electricidad?");
+		System.out.println("Resultados encontrados: " + results.size());
+		results.forEach(System.out::println);
 	}
 }
+*/
