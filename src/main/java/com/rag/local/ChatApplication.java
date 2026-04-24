@@ -1,5 +1,6 @@
 package com.rag.local;
 
+import com.rag.local.client.QdrantClient;
 import com.rag.local.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +27,9 @@ public class ChatApplication implements CommandLineRunner {
 	@Autowired
 	private VectorStoreService vectorStoreService;
 
+	@Autowired
+	private QdrantClient qdrantClient;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
 
@@ -47,6 +51,8 @@ public class ChatApplication implements CommandLineRunner {
 			String hash = hashService.generateHash(chunk);
 			System.out.println(hash);
 		}
+
+		qdrantClient.createCollectionIfNotExists();
 
 		vectorStoreService.storeChunks(chunks);
 		System.out.println("Chunks guardados en Qdrant");
