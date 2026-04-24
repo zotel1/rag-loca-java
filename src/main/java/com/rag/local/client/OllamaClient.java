@@ -35,4 +35,18 @@ public class OllamaClient {
         // Llamada HTTP POST
         return restTemplate.postForObject(url, request, EmbeddingResponse.class);
     }
+
+    public String chat(String prompt) {
+
+        String url = baseUrl + "/api/generate";
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("model", "llama3"); // asegurate de tenerlo en ollama
+        request.put("prompt", prompt);
+        request.put("stream", false);
+
+        Map response = restTemplate.postForObject(url, request, Map.class);
+
+        return (String) response.get("response");
+    }
 }
