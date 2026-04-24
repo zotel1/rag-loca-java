@@ -7,12 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Servicio encargado de:
- * - generar embedding de la pregunta
- * - consultar Qdrant
- * - devolver los textos relevantes
- */
 @Service
 public class SearchService {
 
@@ -27,11 +21,18 @@ public class SearchService {
 
     public List<String> search(String query) {
 
+        System.out.println("\n🔎 SEARCH DEBUG");
+        System.out.println("🔎 Query: " + query);
+
         // 1. embedding de la pregunta
         List<Double> queryEmbedding = embeddingService.generateEmbedding(query);
 
+        System.out.println("🔎 Embedding generado, tamaño: " + queryEmbedding.size());
+
         // 2. buscar en Qdrant
         List<Map<String, Object>> results = qdrantClient.search(queryEmbedding, 3);
+
+        System.out.println("🔎 Resultados crudos de Qdrant: " + results);
 
         // 3. extraer texto del payload
         List<String> texts = new ArrayList<>();
@@ -43,6 +44,8 @@ public class SearchService {
                 texts.add((String) payload.get("text"));
             }
         }
+
+        System.out.println("🔎 Textos extraídos: " + texts.size());
 
         return texts;
     }

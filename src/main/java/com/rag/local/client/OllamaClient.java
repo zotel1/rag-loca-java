@@ -8,10 +8,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Cliente encargado de comunicarse con Ollama.
- * Se utiliza para generar embeddings de texto.
- */
 @Component
 public class OllamaClient {
 
@@ -27,12 +23,13 @@ public class OllamaClient {
 
         String url = baseUrl + "/api/embeddings";
 
-        // Cuerpo de la petición hacia Ollama
         Map<String, Object> request = new HashMap<>();
         request.put("model", embeddingModel);
         request.put("prompt", text);
 
-        // Llamada HTTP POST
+        System.out.println("🧠 Generando embedding...");
+        System.out.println("🧠 URL: " + url);
+
         return restTemplate.postForObject(url, request, EmbeddingResponse.class);
     }
 
@@ -41,12 +38,30 @@ public class OllamaClient {
         String url = baseUrl + "/api/generate";
 
         Map<String, Object> request = new HashMap<>();
-        request.put("model", "llama3"); // asegurate de tenerlo en ollama
+        request.put("model", "llama3");
         request.put("prompt", prompt);
         request.put("stream", false);
 
+        System.out.println("\n🚀 OLLAMA DEBUG");
+        System.out.println("🚀 URL: " + url);
+        System.out.println("🚀 Request: " + request);
+
         Map response = restTemplate.postForObject(url, request, Map.class);
 
-        return (String) response.get("response");
+        System.out.println("🚀 Response cruda: " + response);
+
+        if (response == null) {
+            System.out.println("❌ Ollama devolvió null");
+            return "Error: respuesta null";
+        }
+
+        Object result = response.get("response");
+
+        if (result == null) {
+            System.out.println("❌ Campo 'response' es null");
+            return "Error: sin respuesta del modelo";
+        }
+
+        return result.toString();
     }
 }
