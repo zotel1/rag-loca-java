@@ -10,6 +10,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.List;
 
 @SpringBootApplication
+public class ChatApplication {
+	public static void main(String[] args) {
+        SpringApplication.run(ChatApplication.class, args);
+	}
+}
+
+/*
+@SpringBootApplication
 public class ChatApplication implements CommandLineRunner {
 
 	@Autowired
@@ -66,3 +74,4 @@ public class ChatApplication implements CommandLineRunner {
 		results.forEach(System.out::println);
 	}
 }
+*/
