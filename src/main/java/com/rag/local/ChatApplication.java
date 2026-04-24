@@ -1,6 +1,7 @@
 package com.rag.local;
 
 import com.rag.local.service.ChunkService;
+import com.rag.local.service.EmbeddingService;
 import com.rag.local.service.HashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -22,6 +23,9 @@ public class ChatApplication implements CommandLineRunner {
 	@Autowired
 	private HashService hashService;
 
+	@Autowired
+	private EmbeddingService embeddingService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
 
@@ -30,6 +34,9 @@ public class ChatApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
+
+		List<Double> embedding = embeddingService.generateEmbedding("Hola mundo");
+		System.out.println("Embedding size: " + embedding.size());
 
 		String text = pdfService.extractText("C:\\Users\\zottt\\Desktop\\Instituto-Superior-de-Formacion-docente-Ituzaingo\\primer_anio\\arquitectura_de_computadoras\\Conceptos Basicos de electricidad.pdf");
 		List<String> chunks = chunkService.splitText(text, 500);
