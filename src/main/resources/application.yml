@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: chat
+ollama:
+  base-url: http://localhost:11434
+  embedding-model: nomic-embed-text
+
+
+
