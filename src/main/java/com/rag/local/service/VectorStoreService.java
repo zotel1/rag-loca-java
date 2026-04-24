@@ -44,6 +44,7 @@ public class VectorStoreService {
             // Payload con el texto original
             Map<String, Object> payload = new HashMap<>();
             payload.put("hash", hashService.generateHash(chunk));
+            payload.put("text", chunk);
 
             QdrantPoint point = new QdrantPoint(id, embedding, payload);
 
