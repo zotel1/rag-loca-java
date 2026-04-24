@@ -17,8 +17,17 @@ public class ChatController {
         this.chatService = chatService;
     }
 
+    //@PostMapping
+    //public String chat(@RequestBody ChatRequest request) {
+      //  return chatService.ask(request.getQuestion());
+    //}
+
     @PostMapping
     public String chat(@RequestBody ChatRequest request) {
-        return chatService.ask(request.getQuestion());
+        System.out.println("Pregunta recibida: " + request.getQuestion());
+
+        String response = chatService.ask(request.getQuestion());
+        System.out.println("Respuesta generada: " + response);
+        return response;
     }
 }

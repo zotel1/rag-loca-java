@@ -19,18 +19,34 @@ public class ChatService {
 
     public String ask(String question) {
 
-        // 1. Buscar contexto relevante
+        System.out.println("\n================ CHAT DEBUG ================");
+        System.out.println("👉 Question: " + question);
+
+        if (question == null || question.isBlank()) {
+            return "La pregunta no puede estar vacía";
+        }
+
         List<String> contextChunks = searchService.search(question);
+
+        System.out.println("👉 Context chunks: " + contextChunks.size());
 
         if (contextChunks.isEmpty()) {
             return "No encontré información relevante en los documentos.";
         }
 
-        // 2. Construir prompt
         String prompt = buildPrompt(question, contextChunks);
 
-        // 3. Llamar al modelo
-        return ollamaClient.chat(prompt);
+        String response = ollamaClient.chat(prompt);
+
+        // limpiar ruido del modelo
+        if (response != null) {
+            response = response.replace("Respuesta:", "").trim();
+        }
+
+        System.out.println("👉 Final response:\n" + response);
+        System.out.println("===========================================\n");
+
+        return response;
     }
 
     private String buildPrompt(String question, List<String> contextChunks) {
