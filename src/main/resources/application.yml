@@ -5,5 +5,9 @@ ollama:
   base-url: http://localhost:11434
   embedding-model: nomic-embed-text
 
+qdrant:
+  base-url: http://localhost:6333
+  collection: documents
+
 
 

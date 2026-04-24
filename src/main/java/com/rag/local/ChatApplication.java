@@ -1,13 +1,10 @@
 package com.rag.local;
 
-import com.rag.local.service.ChunkService;
-import com.rag.local.service.EmbeddingService;
-import com.rag.local.service.HashService;
+import com.rag.local.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.rag.local.service.PdfService;
 
 import java.util.List;
 
@@ -26,6 +23,9 @@ public class ChatApplication implements CommandLineRunner {
 	@Autowired
 	private EmbeddingService embeddingService;
 
+	@Autowired
+	private VectorStoreService vectorStoreService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
 
@@ -34,6 +34,8 @@ public class ChatApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
+
+
 
 		List<Double> embedding = embeddingService.generateEmbedding("Hola mundo");
 		System.out.println("Embedding size: " + embedding.size());
@@ -45,5 +47,8 @@ public class ChatApplication implements CommandLineRunner {
 			String hash = hashService.generateHash(chunk);
 			System.out.println(hash);
 		}
+
+		vectorStoreService.storeChunks(chunks);
+		System.out.println("Chunks guardados en Qdrant");
 	}
 }
