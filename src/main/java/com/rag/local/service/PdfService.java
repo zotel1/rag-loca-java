@@ -30,6 +30,11 @@ public class PdfService {
             text = ocrService.extractTextFromPdf(filePath);
         }
 
+        // 🔴 PROTECCIÓN CLAVE (evita null SIEMPRE)
+        if (text == null) {
+            return "";
+        }
+
         return cleanText(text);
     }
 
@@ -40,7 +45,9 @@ public class PdfService {
             return stripper.getText(document);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error leyendo PDF", e);
+            // 🔴 importante: no romper toda la app por un PDF
+            System.out.println("⚠️ Error leyendo PDF con PDFBox, fallback a OCR");
+            return null;
         }
     }
 
@@ -49,7 +56,9 @@ public class PdfService {
      */
     private boolean isTextValid(String text) {
 
-        if (text == null || text.length() < 300) return false;
+        if (text == null || text.trim().isEmpty() || text.length() < 300) {
+            return false;
+        }
 
         long letters = text.chars().filter(Character::isLetter).count();
         double ratio = (double) letters / text.length();
@@ -61,6 +70,11 @@ public class PdfService {
      * Limpieza final del texto.
      */
     private String cleanText(String text) {
+
+        if (text == null) {
+            return "";
+        }
+
         return text
                 .replaceAll("-\\n", "")
                 .replaceAll("\\n", "\n")
