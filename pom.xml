@@ -48,6 +48,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- ORC -->
+		<dependency>
+			<groupId>net.sourceforge.tess4j</groupId>
+			<artifactId>tess4j</artifactId>
+			<version>5.10.0</version>
+		</dependency>
+
 		<!-- PDF -->
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>

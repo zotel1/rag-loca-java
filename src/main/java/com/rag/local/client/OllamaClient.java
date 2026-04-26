@@ -45,7 +45,7 @@ public class OllamaClient {
         String url = baseUrl + "/api/generate";
 
         Map<String, Object> request = new HashMap<>();
-        request.put("model", "phi3");
+        request.put("model", "llama3");
         request.put("prompt", prompt);
         request.put("stream", false);
 

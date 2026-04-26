@@ -39,7 +39,9 @@ public class VectorStoreService {
                 // filtro básico
                 if (chunk == null || chunk.isBlank()) continue;
                 if (chunk.length() < 50) continue;
-                if (chunk.length() > 1200) continue; // evita error de contexto
+                if (chunk.length() > 1200) {
+                    chunk = chunk.substring(0, 1200);
+                }; // evita error de contexto
 
                 String id = hashService.generateUUIDFromText(chunk);
 
