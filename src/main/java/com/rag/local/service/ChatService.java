@@ -31,7 +31,7 @@ public class ChatService {
         System.out.println("👉 Context chunks: " + contextChunks.size());
 
         if (contextChunks.isEmpty()) {
-            return "No encontré información relevante en los documentos.";
+            return "No encontré información en el documentos.";
         }
 
         String prompt = buildPrompt(question, contextChunks);
@@ -53,8 +53,22 @@ public class ChatService {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Sos un asistente que responde preguntas usando SOLO el contexto dado.\n");
-        sb.append("Si la respuesta no está en el contexto, decí que no lo sabés.\n\n");
+        sb.append("Respondé en español.\n");
+        sb.append("Usá SOLO la información del contexto.\n");
+        sb.append("NO inventes información.\n");
+        sb.append("Si algo no está en el contexto, decí: 'No está en el documento'.\n");
+        sb.append("No traduzcas al inglés.\n\n");
+        sb.append("""
+Respondé SOLO usando el contexto proporcionado.
+
+REGLAS:
+- NO agregues conocimiento externo.
+- NO completes definiciones por tu cuenta.
+- Si la respuesta no está explícitamente en el contexto, decí EXACTAMENTE:
+  "No está en el documento".
+- Respondé de forma breve y literal.
+
+""");
 
         sb.append("CONTEXTO:\n");
         for (String chunk : contextChunks) {
@@ -64,7 +78,7 @@ public class ChatService {
         sb.append("\nPREGUNTA:\n");
         sb.append(question).append("\n\n");
 
-        sb.append("RESPUESTA:");
+        sb.append("RESPUESTA EN ESPAÑOL:");
 
         return sb.toString();
     }

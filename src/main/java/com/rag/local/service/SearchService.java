@@ -29,21 +29,36 @@ public class SearchService {
 
         System.out.println("🔎 Embedding generado, tamaño: " + queryEmbedding.size());
 
-        // 2. buscar en Qdrant (aumentamos contexto)
-        int topK = 6;
+        // 2. traer más candidatos
+        int topK = 10;
         List<Map<String, Object>> results = qdrantClient.search(queryEmbedding, topK);
 
         System.out.println("🔎 Resultados crudos de Qdrant: " + results.size());
 
-        // 3. extraer texto del payload con filtro de calidad
+        // 3. ordenar por score (mayor = mejor)
+        results.sort((a, b) -> {
+            Double scoreA = (Double) a.get("score");
+            Double scoreB = (Double) b.get("score");
+
+            if (scoreA == null) return 1;
+            if (scoreB == null) return -1;
+
+            return Double.compare(scoreB, scoreA);
+        });
+
+        // 4. filtrar + limitar top reales
         List<String> texts = new ArrayList<>();
+
+        int maxResults = 4;
 
         for (Map<String, Object> result : results) {
 
+            if (texts.size() >= maxResults) break;
+
             Double score = (Double) result.get("score");
 
-            if (score != null && score < 0.65) {
-                continue; // filtro básico de relevancia
+            if (score != null && score < 0.80) {
+                continue;
             }
 
             Map<String, Object> payload = (Map<String, Object>) result.get("payload");
@@ -52,13 +67,13 @@ public class SearchService {
 
                 String text = (String) payload.get("text");
 
-                if (text.length() > 50) { // evita basura
+                if (text.length() > 50) {
                     texts.add(text);
                 }
             }
         }
 
-        System.out.println("🔎 Textos filtrados finales: " + texts.size());
+        System.out.println("🔎 Textos finales (top rankeados): " + texts.size());
 
         return texts;
     }
