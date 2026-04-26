@@ -12,11 +12,16 @@ class PdfServiceTest {
     private String getResourcePath(String fileName) {
 
         ClassLoader classLoader = getClass().getClassLoader();
+        URL resource = classLoader.getResource(fileName);
+
+        if (resource == null) {
+            throw new RuntimeException("Archivo no encontrado en classpath: " + fileName);
+        }
 
         try {
-            return new File(classLoader.getResource(fileName).toURI()).getAbsolutePath();
+            return new File(resource.toURI()).getAbsolutePath();
         } catch (Exception e) {
-            throw new RuntimeException("Archivo no encontrado: " + fileName);
+            throw new RuntimeException("Error convirtiendo path: " + fileName, e);
         }
     }
 
