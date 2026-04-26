@@ -10,11 +10,21 @@ import java.io.File;
 public class PdfService {
 
     public String extractText(String filePath) {
+
         try (PDDocument document = PDDocument.load(new File(filePath))) {
+
             PDFTextStripper stripper = new PDFTextStripper();
-            return  stripper.getText(document);
+            String text = stripper.getText(document);
+
+            return text
+                    .replaceAll("-\\n", "") // une palabras cortadas
+                    .replaceAll("\\n", "\n")
+                    .replaceAll("\\s+", " ")
+                    .replaceAll("S\\s+CHED", "SCHED")
+                    .trim();
+
         } catch (Exception e) {
-            throw new RuntimeException("Error leyendo PDF",e);
+            throw new RuntimeException("Error leyendo PDF", e);
         }
     }
 }
