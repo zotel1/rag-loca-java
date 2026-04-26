@@ -79,7 +79,14 @@ public class TextChunkerService {
 
             int end = Math.min(start + MAX_CHUNK_SIZE, paragraph.length());
 
-            parts.add(paragraph.substring(start, end));
+            if (end < paragraph.length()) {
+                int lastSpace = paragraph.lastIndexOf(" ", end);
+                if (lastSpace > start) {
+                    end = lastSpace;
+                }
+            }
+
+            parts.add(paragraph.substring(start, end).trim());
 
             start = end;
         }
