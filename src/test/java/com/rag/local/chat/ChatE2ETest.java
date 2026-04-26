@@ -4,6 +4,7 @@ import com.rag.local.client.OllamaClient;
 import com.rag.local.model.EmbeddingResponse;
 import com.rag.local.service.ChatService;
 import com.rag.local.service.SearchService;
+import com.rag.local.service.TextChunkerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

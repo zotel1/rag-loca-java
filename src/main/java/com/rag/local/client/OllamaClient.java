@@ -19,16 +19,23 @@ public class OllamaClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private static final int MAX_INPUT_CHARS = 1000;
+
     public EmbeddingResponse generateEmbedding(String text) {
 
         String url = baseUrl + "/api/embeddings";
+
+        // 🔥 recorte inteligente
+        if (text.length() > MAX_INPUT_CHARS) {
+            text = text.substring(0, MAX_INPUT_CHARS);
+        }
 
         Map<String, Object> request = new HashMap<>();
         request.put("model", embeddingModel);
         request.put("prompt", text);
 
         System.out.println("🧠 Generando embedding...");
-        System.out.println("🧠 URL: " + url);
+        System.out.println("🧠 Tamaño texto: " + text.length());
 
         return restTemplate.postForObject(url, request, EmbeddingResponse.class);
     }

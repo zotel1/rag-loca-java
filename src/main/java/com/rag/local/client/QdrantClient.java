@@ -87,6 +87,7 @@ public class QdrantClient {
     }
 
     public List<Map<String, Object>> search(List<Double> vector, int limit) {
+
         String url = baseUrl + "/collections/" + collection + "/points/search";
 
         Map<String, Object> request = new HashMap<>();
@@ -94,8 +95,14 @@ public class QdrantClient {
         request.put("limit", limit);
         request.put("with_payload", true);
 
+        System.out.println("📡 QDRANT SEARCH → limit: " + limit);
+
         Map response = restTemplate.postForObject(url, request, Map.class);
 
-        return (List<Map<String, Object>>) response.get("result");
+        List<Map<String, Object>> result = (List<Map<String, Object>>) response.get("result");
+
+        System.out.println("📡 Resultados obtenidos: " + result.size());
+
+        return result;
     }
 }

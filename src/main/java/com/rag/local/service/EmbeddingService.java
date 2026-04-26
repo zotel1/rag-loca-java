@@ -24,6 +24,10 @@ public class EmbeddingService {
 
         EmbeddingResponse response = ollamaClient.generateEmbedding(text);
 
+        if (response == null || response.getEmbedding() == null) {
+            throw new RuntimeException("Error generando embedding: respuesta null");
+        }
+
         return response.getEmbedding();
     }
 }
