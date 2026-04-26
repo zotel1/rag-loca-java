@@ -10,6 +10,30 @@ class TextChunkerServiceTest {
 
     private final TextChunkerService chunker = new TextChunkerService();
 
+
+    @Test
+    void shouldKeepContextBetweenChunks() {
+
+        String text = """
+            La electricidad es una forma de energía que permite el funcionamiento de dispositivos.
+
+            Se basa en el movimiento de electrones dentro de un conductor.
+
+            Es fundamental para sistemas informáticos modernos.
+            """;
+
+        List<String> chunks = chunker.chunkText(text);
+
+        assertThat(chunks).isNotEmpty();
+
+        if (chunks.size() > 1) {
+            String lastPart = chunks.get(0)
+                    .substring(Math.max(0, chunks.get(0).length() - 50));
+
+            assertThat(chunks.get(1)).contains(lastPart.substring(0, 20));
+        }
+    }
+
     @Test
     void shouldSplitTextIntoParagraphChunks() {
 

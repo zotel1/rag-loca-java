@@ -35,21 +35,32 @@ public class VectorStoreService {
 
         for (String chunk : chunks) {
 
-            // Generamos hash único para evitar duplicados
-            String id = hashService.generateUUIDFromText(chunk);
+            try {
+                // filtro básico
+                if (chunk == null || chunk.isBlank()) continue;
+                if (chunk.length() < 50) continue;
+                if (chunk.length() > 1200) continue; // evita error de contexto
 
-            // Generamos embedding
-            List<Double> embedding = embeddingService.generateEmbedding(chunk);
+                String id = hashService.generateUUIDFromText(chunk);
 
-            // Payload con el texto original
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("hash", hashService.generateHash(chunk));
-            payload.put("text", chunk);
+                List<Double> embedding = embeddingService.generateEmbedding(chunk);
 
-            QdrantPoint point = new QdrantPoint(id, embedding, payload);
+                if (embedding == null || embedding.isEmpty()) {
+                    System.out.println("❌ Embedding vacío, se ignora chunk");
+                    continue;
+                }
 
-            // Guardamos en Qdrant
-            qdrantClient.upsertPoints(List.of(point));
+                Map<String, Object> payload = new HashMap<>();
+                payload.put("hash", hashService.generateHash(chunk));
+                payload.put("text", chunk);
+
+                QdrantPoint point = new QdrantPoint(id, embedding, payload);
+
+                qdrantClient.upsertPoints(List.of(point));
+
+            } catch (Exception e) {
+                System.out.println("❌ Error guardando chunk: " + e.getMessage());
+            }
         }
     }
 }
