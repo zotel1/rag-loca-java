@@ -6,7 +6,6 @@ import java.io.File;
 import java.net.URL;
 
 import static org.mockito.Mockito.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class PdfServiceTest {
@@ -30,7 +29,10 @@ class PdfServiceTest {
     @Test
     void shouldExtractTextFromDigitalPdf() {
 
-        PdfService pdfService = new PdfService(new OcrService());
+        // Mock OCR (aunque no debería usarse en PDF digital)
+        OcrService ocrMock = mock(OcrService.class);
+
+        PdfService pdfService = new PdfService(ocrMock);
 
         String path = getResourcePath("digital.pdf");
 
@@ -38,21 +40,10 @@ class PdfServiceTest {
 
         assertNotNull(text);
         assertTrue(text.length() > 100);
+
+        // Verificamos que NO se usó OCR
+        verify(ocrMock, never()).extractTextFromPdf(anyString());
     }
-
-    /*
-    @Test
-    void shouldFallbackToOcrWhenTextIsPoor() {
-
-        PdfService pdfService = new PdfService(new OcrService());
-
-        String path = getResourcePath("imagen-ocr.pdf");
-
-        String text = pdfService.extractText(path);
-
-        assertNotNull(text);
-        assertTrue(text.length() > 100);
-    } */
 
     @Test
     void shouldFallbackToOcrWhenTextIsPoor() {
@@ -60,7 +51,7 @@ class PdfServiceTest {
         OcrService ocrMock = mock(OcrService.class);
 
         when(ocrMock.extractTextFromPdf(anyString()))
-                .thenReturn("Texto OCR simulado suficientemente largo para testear comportamiento...");
+                .thenReturn("Texto OCR simulado suficientemente largo para testear comportamiento y superar el threshold mínimo...");
 
         PdfService pdfService = new PdfService(ocrMock);
 
@@ -70,5 +61,8 @@ class PdfServiceTest {
 
         assertNotNull(text);
         assertTrue(text.length() > 50);
+
+        // Verificamos que SÍ se usó OCR
+        verify(ocrMock, times(1)).extractTextFromPdf(anyString());
     }
 }
