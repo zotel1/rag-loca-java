@@ -1,0 +1,48 @@
+package com.rag.local.service;
+
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.net.URL;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class PdfServiceTest {
+
+    private String getResourcePath(String fileName) {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        try {
+            return new File(classLoader.getResource(fileName).toURI()).getAbsolutePath();
+        } catch (Exception e) {
+            throw new RuntimeException("Archivo no encontrado: " + fileName);
+        }
+    }
+
+    @Test
+    void shouldExtractTextFromDigitalPdf() {
+
+        PdfService pdfService = new PdfService(new OcrService());
+
+        String path = getResourcePath("digital.pdf");
+
+        String text = pdfService.extractText(path);
+
+        assertNotNull(text);
+        assertTrue(text.length() > 100);
+    }
+
+    @Test
+    void shouldFallbackToOcrWhenTextIsPoor() {
+
+        PdfService pdfService = new PdfService(new OcrService());
+
+        String path = getResourcePath("imagen-ocr.pdf");
+
+        String text = pdfService.extractText(path);
+
+        assertNotNull(text);
+        assertTrue(text.length() > 100);
+    }
+}

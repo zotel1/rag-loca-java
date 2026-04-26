@@ -6,25 +6,65 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 
+/**
+ * Servicio encargado de:
+ * - extraer texto de PDFs
+ * - decidir si usar OCR o no
+ */
 @Service
 public class PdfService {
 
+    private final OcrService ocrService;
+
+    public PdfService(OcrService ocrService) {
+        this.ocrService = ocrService;
+    }
+
     public String extractText(String filePath) {
 
+        String text = extractWithPdfBox(filePath);
+
+        // decisión inteligente
+        if (!isTextValid(text)) {
+            System.out.println("⚠️ Texto pobre detectado → usando OCR...");
+            text = ocrService.extractTextFromPdf(filePath);
+        }
+
+        return cleanText(text);
+    }
+
+    private String extractWithPdfBox(String filePath) {
         try (PDDocument document = PDDocument.load(new File(filePath))) {
 
             PDFTextStripper stripper = new PDFTextStripper();
-            String text = stripper.getText(document);
-
-            return text
-                    .replaceAll("-\\n", "") // une palabras cortadas
-                    .replaceAll("\\n", "\n")
-                    .replaceAll("\\s+", " ")
-                    .replaceAll("S\\s+CHED", "SCHED")
-                    .trim();
+            return stripper.getText(document);
 
         } catch (Exception e) {
             throw new RuntimeException("Error leyendo PDF", e);
         }
+    }
+
+    /**
+     * Detecta si el texto extraído es usable o basura.
+     */
+    private boolean isTextValid(String text) {
+
+        if (text == null || text.length() < 300) return false;
+
+        long letters = text.chars().filter(Character::isLetter).count();
+        double ratio = (double) letters / text.length();
+
+        return ratio > 0.6;
+    }
+
+    /**
+     * Limpieza final del texto.
+     */
+    private String cleanText(String text) {
+        return text
+                .replaceAll("-\\n", "")
+                .replaceAll("\\n", "\n")
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 }
